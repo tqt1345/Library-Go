@@ -1,8 +1,9 @@
 CREATE TABLE IF NOT EXISTS books (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  title varchar(255),
+  Title varchar(255),
   description varchar(2000)
 );
+
 
 INSERT INTO books (title, description) VALUES
 ('The Midnight Library', 'Between life and death there is a library, and within that library, the shelves go on forever. Every book provides a chance to try another life you could have lived. To see how things would be if you had made other choices...'),
