@@ -29,11 +29,19 @@ func BookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 func BookByAuthorHandler(w http.ResponseWriter, r *http.Request) {
 }
 
-func main() {
+func run() error {
 	port := ":80"
 
 	http.HandleFunc("GET /api/", ApiIndexHandler)
 
 	log.Printf("Starting server on port%s", port)
 	http.ListenAndServe(port, nil)
+	return nil
+}
+
+func main() {
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
