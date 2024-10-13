@@ -3,11 +3,22 @@
 //   sqlc v1.27.0
 // source: query.sql
 
-package db
+package main
 
 import (
 	"context"
 )
+
+const bookId1 = `-- name: BookId1 :one
+SELECT id, title, description FROM books WHERE id = 1
+`
+
+func (q *Queries) BookId1(ctx context.Context) (Book, error) {
+	row := q.db.QueryRowContext(ctx, bookId1)
+	var i Book
+	err := row.Scan(&i.ID, &i.Title, &i.Description)
+	return i, err
+}
 
 const listBooks = `-- name: ListBooks :many
 SELECT id, title, description FROM books
@@ -19,7 +30,6 @@ func (q *Queries) ListBooks(ctx context.Context) ([]Book, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 	var items []Book
 	for rows.Next() {
