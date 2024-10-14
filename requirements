@@ -42,6 +42,6 @@ Books -> Author (Many to many)
 
 # Tech stack
 - Go
-- Air
 - Sqlite3
-- Sqlc
+- htmx
+- templ

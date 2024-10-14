@@ -4,13 +4,13 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/tqt1345/Library-Go/database"
+	"github.com/tqt1345/Library-Go/model"
 )
 
 const (
@@ -20,6 +20,7 @@ const (
 )
 
 var (
+	repo    *model.Repository
 	queries *database.Queries
 	ctx     context.Context
 	ddl     string
@@ -51,18 +52,26 @@ func ApiBookByIdHandler(w http.ResponseWriter, r *http.Request) {
 	// i, err := strconv.Atoi(strId)
 	// id := int64(i)
 
-	id, err := stringToInt64(r.PathValue("id"))
+	// id, err := stringToInt64(r.PathValue("id"))
+	// if err != nil {
+	// 	log.Print(err)
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+	//
+	id, err := stringToInt(r.PathValue("id"))
 	if err != nil {
 		log.Print(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Print(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	book, err := queries.FindBookById(ctx, id)
+	// book, err := queries.FindBookById(ctx, id)
+	book, err := repo.FindBookById(id)
 	if err != nil {
-		notFound := fmt.Sprintf("No book found with id: %d ", id)
-		log.Print(notFound)
-		http.Error(w, notFound, http.StatusNotFound)
+		log.Print(err.Error())
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -83,8 +92,8 @@ func ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 
 	books, err := queries.FindBookByTitle(ctx, sql.NullString{String: title, Valid: true})
 	if err != nil {
-		log.Print("Not Found")
-		http.Error(w, "Not Found", http.StatusNotFound)
+		log.Print(err.Error())
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -101,6 +110,14 @@ func stringToInt64(s string) (int64, error) {
 		return 0, err
 	}
 	return int64(i), nil
+}
+
+func stringToInt(s string) (int, error) {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, err
+	}
+	return i, nil
 }
 
 func run() error {
@@ -123,6 +140,9 @@ func run() error {
 
 	queries = database.New(db)
 	log.Print("Queries loaded...")
+
+	repo = model.NewRepo(db)
+	log.Print("Repository loaded...")
 
 	port := ":8080"
 
