@@ -7,3 +7,6 @@ SELECT * FROM books WHERE id = ?;
 
 -- name: FindBookByTitle :many
 SELECT * FROM books WHERE title LIKE '%' || ? || '%';
+
+-- name: FindAuthorById :one
+SELECT * FROM authors WHERE id = ?;

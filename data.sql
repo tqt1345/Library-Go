@@ -9,3 +9,16 @@ INSERT INTO books (title, description) VALUES
 ('The Catcher in the Rye', 'The hero-narrator of The Catcher in the Rye is an ancient child of sixteen, a native New Yorker named Holden Caulfield. Through circumstances that tend to preclude adult, secondhand description, he leaves his prep school in Pennsylvania and goes underground in New York City for three days.'),
 ('The Alchemist', 'Paulo Coelho''s masterpiece tells the mystical story of Santiago, an Andalusian shepherd boy who yearns to travel in search of a worldly treasure. His quest will lead him to riches far different—and far more satisfying—than he ever imagined.'),
 ('The Hunger Games', 'In the ruins of a place once known as North America lies the nation of Panem, a shining Capitol surrounded by twelve outlying districts. The Capitol is harsh and cruel and keeps the districts in line by forcing them all to send one boy and one girl between the ages of twelve and eighteen to participate in the annual Hunger Games, a fight to the death on live TV.');
+
+INSERT INTO authors (first_name, last_name) VALUES
+('Jane', 'Austen'),
+('George', 'Orwell'),
+('Ernest', 'Hemingway'),
+('Virginia', 'Woolf'),
+('Gabriel', 'García Márquez'),
+('Toni', 'Morrison'),
+('Leo', 'Tolstoy'),
+('Haruki', 'Murakami'),
+('Agatha', 'Christie'),
+('F. Scott', 'Fitzgerald')
+
