@@ -33,14 +33,14 @@ func ApiIndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
-	books, err := queries.FindAllBooks(ctx)
+	books, err := repo.FindAllBooks()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Print(err)
 	}
 
 	if books == nil {
-		books = []database.Book{}
+		books = []model.Book{}
 	}
 
 	w.Header().Set(ContentType, JsonMime)
@@ -48,18 +48,7 @@ func ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApiBookByIdHandler(w http.ResponseWriter, r *http.Request) {
-	// strId := r.PathValue("id")
-	// i, err := strconv.Atoi(strId)
-	// id := int64(i)
-
-	// id, err := stringToInt64(r.PathValue("id"))
-	// if err != nil {
-	// 	log.Print(err)
-	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-	//
-	id, err := stringToInt(r.PathValue("id"))
+	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		log.Print(err)
 		log.Print(err.Error())
@@ -67,7 +56,6 @@ func ApiBookByIdHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// book, err := queries.FindBookById(ctx, id)
 	book, err := repo.FindBookById(id)
 	if err != nil {
 		log.Print(err.Error())
@@ -90,11 +78,15 @@ func ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	title = params.Get("title")
 
-	books, err := queries.FindBookByTitle(ctx, sql.NullString{String: title, Valid: true})
+	books, err := repo.FindBooksByTitle(title)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
+	}
+
+	if books == nil {
+		books = []model.Book{}
 	}
 
 	w.Header().Set(ContentType, JsonMime)
@@ -104,20 +96,27 @@ func ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 func ApiBookByAuthorHandler(w http.ResponseWriter, r *http.Request) {
 }
 
+func ApiAllAuthorsHandler(w http.ResponseWriter, r *http.Request) {
+	authors, err := repo.FindAllAuthors()
+	if err != nil {
+		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	if authors == nil {
+		authors = []model.Author{}
+	}
+
+	w.Header().Set(ContentType, JsonMime)
+	json.NewEncoder(w).Encode(authors)
+}
+
 func stringToInt64(s string) (int64, error) {
 	i, err := strconv.Atoi(s)
 	if err != nil {
 		return 0, err
 	}
 	return int64(i), nil
-}
-
-func stringToInt(s string) (int, error) {
-	i, err := strconv.Atoi(s)
-	if err != nil {
-		return 0, err
-	}
-	return i, nil
 }
 
 func run() error {
@@ -146,10 +145,15 @@ func run() error {
 
 	port := ":8080"
 
+	// Book handlers
 	http.HandleFunc("GET /api/", ApiIndexHandler)
 	http.HandleFunc("GET /api/books/all", ApiAllBooksHandler)
 	http.HandleFunc("GET /api/books/{id}", ApiBookByIdHandler)
 	http.HandleFunc("GET /api/books/title", ApiBookByTitleHandler)
+
+	// Author handlers
+	http.HandleFunc("GET /api/authors/all", ApiAllAuthorsHandler)
+
 	log.Print("Routes loaded...")
 
 	log.Printf("Server started on port%s", port)
