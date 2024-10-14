@@ -50,11 +50,11 @@ func (q *Queries) FindBookById(ctx context.Context, id int64) (Book, error) {
 }
 
 const findBookByTitle = `-- name: FindBookByTitle :many
-SELECT id, title, description FROM books WHERE title LIKE ?
+SELECT id, title, description FROM books WHERE title LIKE '%' || ? || '%'
 `
 
-func (q *Queries) FindBookByTitle(ctx context.Context, title sql.NullString) ([]Book, error) {
-	rows, err := q.db.QueryContext(ctx, findBookByTitle, title)
+func (q *Queries) FindBookByTitle(ctx context.Context, dollar_1 sql.NullString) ([]Book, error) {
+	rows, err := q.db.QueryContext(ctx, findBookByTitle, dollar_1)
 	if err != nil {
 		return nil, err
 	}

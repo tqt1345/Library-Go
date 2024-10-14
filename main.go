@@ -32,7 +32,6 @@ func ApiIndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set(ContentType, JsonMime)
 	books, err := queries.FindAllBooks(ctx)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -42,18 +41,22 @@ func ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
 	if books == nil {
 		books = []database.Book{}
 	}
+
+	w.Header().Set(ContentType, JsonMime)
 	json.NewEncoder(w).Encode(books)
 }
 
 func ApiBookByIdHandler(w http.ResponseWriter, r *http.Request) {
-	strId := r.PathValue("id")
-	i, err := strconv.Atoi(strId)
+	// strId := r.PathValue("id")
+	// i, err := strconv.Atoi(strId)
+	// id := int64(i)
+
+	id, err := stringToInt64(r.PathValue("id"))
 	if err != nil {
 		log.Print(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	id := int64(i)
 
 	book, err := queries.FindBookById(ctx, id)
 	if err != nil {
@@ -90,6 +93,14 @@ func ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ApiBookByAuthorHandler(w http.ResponseWriter, r *http.Request) {
+}
+
+func stringToInt64(s string) (int64, error) {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		return 0, err
+	}
+	return int64(i), nil
 }
 
 func run() error {
