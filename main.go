@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -111,6 +112,31 @@ func ApiAllAuthorsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(authors)
 }
 
+func ApiAuthorByFirstName(w http.ResponseWriter, r *http.Request) {
+	params := r.URL.Query()
+	if params["firstName"] == nil {
+		err := errors.New("Bad request")
+		log.Print(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	name := params.Get("firstName")
+	authors, err := repo.FindAuthorsByFirstName(name)
+	if err != nil {
+		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if authors == nil {
+		authors = []model.Author{}
+	}
+
+	w.Header().Set(ContentType, JsonMime)
+	json.NewEncoder(w).Encode(authors)
+}
+
 func stringToInt64(s string) (int64, error) {
 	i, err := strconv.Atoi(s)
 	if err != nil {
@@ -153,6 +179,7 @@ func run() error {
 
 	// Author handlers
 	http.HandleFunc("GET /api/authors/all", ApiAllAuthorsHandler)
+	http.HandleFunc("GET /api/authors/firstName", ApiAuthorByFirstName)
 
 	log.Print("Routes loaded...")
 

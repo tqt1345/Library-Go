@@ -40,7 +40,6 @@ func (r *Repository) FindBookById(id int) (Book, error) {
 
 func (r *Repository) FindBooksByTitle(title string) ([]Book, error) {
 	sql := `SELECT * FROM books WHERE title LIKE '%' || ? || '%'`
-
 	var books []Book
 
 	rows, err := r.db.Query(sql, title)
@@ -128,6 +127,32 @@ func (r *Repository) FindAllAuthors() ([]Author, error) {
 	return authors, nil
 }
 
-// func (r *Repository) FindAuthorsByFirstName(name string) ([]Author, error) {
-//
-// }
+func (r *Repository) FindAuthorsByFirstName(name string) ([]Author, error) {
+	sql := `SELECT * FROM authors WHERE first_name LIKE '%' || ? || '%'`
+
+	var authors []Author
+
+	rows, err := r.db.Query(sql, name)
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var a Author
+		err := rows.Scan(&a.ID, &a.FirstName, &a.LastName)
+		if err != nil {
+			log.Print(err)
+			return nil, err
+		}
+		authors = append(authors, a)
+	}
+
+	if err := rows.Err(); err != nil {
+		log.Print(err)
+		return nil, err
+	}
+
+	return authors, nil
+}
