@@ -25,9 +25,6 @@ func NewRepo(d *sql.DB) *Repository {
 	return &Repository{db: d}
 }
 
-func FindAll() {
-}
-
 func (r *Repository) FindBookById(id int) (Book, error) {
 	sql := `SELECT * FROM books WHERE id = ?`
 
