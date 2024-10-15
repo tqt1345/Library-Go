@@ -30,36 +30,42 @@ var (
 func ApiIndexHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(ContentType, JsonMime)
 
-	encode(w, "Hello World")
+	json.NewEncoder(w).Encode("Hello world!")
 }
 
 func ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
 	books, err := repo.FindAllBooks()
 	if err != nil {
-		InternalServerError(w, err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Print(err)
 	}
 
 	if books == nil {
 		books = []model.Book{}
 	}
 
-	encode(w, books)
+	w.Header().Set(ContentType, JsonMime)
+	json.NewEncoder(w).Encode(books)
 }
 
 func ApiBookByIdHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		BadRequest(w, err)
+		log.Print(err)
+		log.Print(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	book, err := repo.FindBookById(id)
 	if err != nil {
-		NotFound(w, err)
+		log.Print(err.Error())
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
-	encode(w, book)
+	w.Header().Set(ContentType, JsonMime)
+	json.NewEncoder(w).Encode(book)
 }
 
 func ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
@@ -67,15 +73,16 @@ func ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 	var title string
 
 	if params["title"] == nil {
-		err := errors.New("Bad request param")
-		BadRequest(w, err)
+		log.Print("Bad Request")
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 	title = params.Get("title")
 
 	books, err := repo.FindBooksByTitle(title)
 	if err != nil {
-		NotFound(w, err)
+		log.Print(err.Error())
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -83,12 +90,8 @@ func ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 		books = []model.Book{}
 	}
 
-	encode(w, books)
-}
-
-func NotFound(w http.ResponseWriter, err error) {
-	log.Print(err.Error())
-	http.Error(w, err.Error(), http.StatusNotFound)
+	w.Header().Set(ContentType, JsonMime)
+	json.NewEncoder(w).Encode(books)
 }
 
 func ApiBookByAuthorHandler(w http.ResponseWriter, r *http.Request) {
@@ -97,28 +100,32 @@ func ApiBookByAuthorHandler(w http.ResponseWriter, r *http.Request) {
 func ApiAllAuthorsHandler(w http.ResponseWriter, r *http.Request) {
 	authors, err := repo.FindAllAuthors()
 	if err != nil {
-		InternalServerError(w, err)
+		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 
 	if authors == nil {
 		authors = []model.Author{}
 	}
 
-	encode(w, authors)
+	w.Header().Set(ContentType, JsonMime)
+	json.NewEncoder(w).Encode(authors)
 }
 
 func ApiAuthorByFirstName(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	if params["firstName"] == nil {
-		err := errors.New("Bad request param")
-		BadRequest(w, err)
+		err := errors.New("Bad request")
+		log.Print(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	name := params.Get("firstName")
 	authors, err := repo.FindAuthorsByFirstName(name)
 	if err != nil {
-		InternalServerError(w, err)
+		log.Print(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -126,22 +133,8 @@ func ApiAuthorByFirstName(w http.ResponseWriter, r *http.Request) {
 		authors = []model.Author{}
 	}
 
-	encode(w, authors)
-}
-
-func BadRequest(w http.ResponseWriter, err error) {
-	log.Print(err.Error())
-	http.Error(w, err.Error(), http.StatusBadRequest)
-}
-
-func InternalServerError(w http.ResponseWriter, err error) {
-	log.Print(err)
-	http.Error(w, err.Error(), http.StatusInternalServerError)
-}
-
-func encode(w http.ResponseWriter, i any) {
 	w.Header().Set(ContentType, JsonMime)
-	json.NewEncoder(w).Encode(i)
+	json.NewEncoder(w).Encode(authors)
 }
 
 func stringToInt64(s string) (int64, error) {
