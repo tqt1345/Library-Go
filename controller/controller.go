@@ -20,7 +20,7 @@ type Header struct {
 func BookCatalogueHeaderTemplate(w http.ResponseWriter, r *http.Request) {
 	h := Header{"Book Catalogue", nv}
 
-	tmpl, err := template.ParseFiles(wd + "/view/fragments/header.html")
+	tmpl, err := template.ParseFiles(wd + "/view/templates/header.html")
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -178,7 +178,7 @@ func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
 		books = []model.Book{}
 	}
 
-	tmpl, err := template.ParseFiles(wd + "/view/fragments/catalogue-table.html")
+	tmpl, err := template.ParseFiles(wd + "/view/templates/catalogue-table.html")
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -198,7 +198,7 @@ func AllBooks(w http.ResponseWriter, r *http.Request) {
 func IndexHeaderTemplate(w http.ResponseWriter, r *http.Request) {
 	h := Header{"Home", nv}
 
-	tmpl, err := template.ParseFiles(wd + "/view/fragments/header.html")
+	tmpl, err := template.ParseFiles(wd + "/view/templates/header.html")
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
