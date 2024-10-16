@@ -48,7 +48,6 @@ func ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
 func ApiBookByIdHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
-		log.Print(err)
 		log.Print(err.Error())
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
