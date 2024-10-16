@@ -3,23 +3,28 @@ package controller
 import (
 	"encoding/json"
 	"errors"
+	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/tqt1345/Library-Go/model"
 )
 
-var repo *model.Repository
+var (
+	repo *model.Repository
+	wd   string
+)
 
 const (
-	JsonMime    = "application/json"
-	HtmlMime    = "text/html"
+	Json        = "application/json"
+	Html        = "text/html"
 	ContentType = "Content-Type"
 )
 
 func ApiIndexHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set(ContentType, JsonMime)
+	w.Header().Set(ContentType, Json)
 
 	json.NewEncoder(w).Encode("Hello world!")
 }
@@ -29,13 +34,14 @@ func ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Print(err)
+		return
 	}
 
 	if books == nil {
 		books = []model.Book{}
 	}
 
-	w.Header().Set(ContentType, JsonMime)
+	w.Header().Set(ContentType, Json)
 	json.NewEncoder(w).Encode(books)
 }
 
@@ -55,7 +61,7 @@ func ApiBookByIdHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set(ContentType, JsonMime)
+	w.Header().Set(ContentType, Json)
 	json.NewEncoder(w).Encode(book)
 }
 
@@ -81,7 +87,7 @@ func ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 		books = []model.Book{}
 	}
 
-	w.Header().Set(ContentType, JsonMime)
+	w.Header().Set(ContentType, Json)
 	json.NewEncoder(w).Encode(books)
 }
 
@@ -99,7 +105,7 @@ func ApiAllAuthorsHandler(w http.ResponseWriter, r *http.Request) {
 		authors = []model.Author{}
 	}
 
-	w.Header().Set(ContentType, JsonMime)
+	w.Header().Set(ContentType, Json)
 	json.NewEncoder(w).Encode(authors)
 }
 
@@ -124,18 +130,54 @@ func ApiAuthorByFirstName(w http.ResponseWriter, r *http.Request) {
 		authors = []model.Author{}
 	}
 
-	w.Header().Set(ContentType, JsonMime)
+	w.Header().Set(ContentType, Json)
 	json.NewEncoder(w).Encode(authors)
+}
+
+func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
+	books, err := repo.FindAllBooks()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Print(err.Error())
+		return
+	}
+
+	if books == nil {
+		books = []model.Book{}
+	}
+
+	tmpl, err := template.ParseFiles(wd + "/view/catalogue-table.html")
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set(ContentType, Html)
+	tmpl.Execute(w, books)
+}
+
+func AllBooks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set(ContentType, Html)
+	http.ServeFile(w, r, wd+"/view/books.html")
 }
 
 func Init(r *model.Repository) {
 	repo = r
+
+	var err error
+	wd, err = os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Book handlers
 	http.HandleFunc("GET /api/", ApiIndexHandler)
 	http.HandleFunc("GET /api/books/all", ApiAllBooksHandler)
 	http.HandleFunc("GET /api/books/{id}", ApiBookByIdHandler)
 	http.HandleFunc("GET /api/books/title", ApiBookByTitleHandler)
+	http.HandleFunc("GET /template/books/catalogue", AllBooksTemplate)
+	http.HandleFunc("GET /books/catalogue", AllBooks)
 
 	// Author handlers
 	http.HandleFunc("GET /api/authors/all", ApiAllAuthorsHandler)

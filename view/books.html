@@ -1,0 +1,18 @@
+<!doctype html>
+
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Book Catalogue</title>
+    <!-- Centered viewport -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
+    >
+    <script src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <h1>Book Catalogue</h1>
+    <div hx-get="/template/books/catalogue" hx-trigger="load"></div>   
+  </body>
+</html>
