@@ -17,20 +17,6 @@ type Header struct {
 	NavItems []NavItem
 }
 
-func BookCatalogueHeaderTemplate(w http.ResponseWriter, r *http.Request) {
-	h := Header{"Book Catalogue", nv}
-
-	tmpl, err := template.ParseFiles(wd + "/view/templates/header.html")
-	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set(ContentType, Html)
-	tmpl.Execute(w, h)
-}
-
 type NavItem struct {
 	Title string
 	Url   string
@@ -55,6 +41,8 @@ const (
 	Html        = "text/html"
 	ContentType = "Content-Type"
 )
+
+// API HANDLERS
 
 func ApiIndexHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(ContentType, Json)
@@ -166,6 +154,26 @@ func ApiAuthorByFirstName(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(authors)
 }
 
+// END API HANDLERS
+
+func AllBooks(w http.ResponseWriter, r *http.Request) {
+	servePage(w, r, "/view/books.html")
+}
+
+// HEADER TEMPLATES
+
+func BookCatalogueHeaderTemplate(w http.ResponseWriter, r *http.Request) {
+	serveHeaderTemplate(w, "Book Catalogue")
+}
+
+func IndexHeaderTemplate(w http.ResponseWriter, r *http.Request) {
+	serveHeaderTemplate(w, "Home")
+}
+
+// END HEADER TEMPLATES
+
+// CONTENT TEMPLATES
+
 func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
 	books, err := repo.FindAllBooks()
 	if err != nil {
@@ -189,14 +197,17 @@ func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, books)
 }
 
-func AllBooks(w http.ResponseWriter, r *http.Request) {
-	// w.Header().Set(ContentType, Html)
-	// http.ServeFile(w, r, wd+"/view/books.html")
-	servePage(w, r, "/view/books.html")
+// END CONTENT TEMPLATES
+
+// HELPER FUNCTIONS
+
+func servePage(w http.ResponseWriter, r *http.Request, filePath string) {
+	w.Header().Set(ContentType, Html)
+	http.ServeFile(w, r, wd+filePath)
 }
 
-func IndexHeaderTemplate(w http.ResponseWriter, r *http.Request) {
-	h := Header{"Home", nv}
+func serveHeaderTemplate(w http.ResponseWriter, title string) {
+	h := Header{title, nv}
 
 	tmpl, err := template.ParseFiles(wd + "/view/templates/header.html")
 	if err != nil {
@@ -209,13 +220,10 @@ func IndexHeaderTemplate(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, h)
 }
 
+// END HELPER FUNCTIONS
+
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	servePage(w, r, "/view/index.html")
-}
-
-func servePage(w http.ResponseWriter, r *http.Request, filePath string) {
-	w.Header().Set(ContentType, Html)
-	http.ServeFile(w, r, wd+filePath)
 }
 
 func Init(r *model.Repository) {
