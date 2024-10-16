@@ -12,9 +12,42 @@ import (
 	"github.com/tqt1345/Library-Go/model"
 )
 
+type Header struct {
+	Heading  string
+	NavItems []NavItem
+}
+
+func BookCatalogueHeaderTemplate(w http.ResponseWriter, r *http.Request) {
+	h := Header{"Book Catalogue", nv}
+
+	tmpl, err := template.ParseFiles(wd + "/view/fragments/header.html")
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set(ContentType, Html)
+	tmpl.Execute(w, h)
+}
+
+type NavItem struct {
+	Title string
+	Url   string
+}
+
+type NavItems []NavItem
+
+func (n *NavItems) Add(title, url string) {
+	// *n = append(*n, NavItem{Title: title, Url: title})
+	*n = append(*n, NavItem{Title: title, Url: url})
+}
+
 var (
 	repo *model.Repository
 	wd   string
+	hd   Header
+	nv   NavItems
 )
 
 const (
@@ -145,7 +178,7 @@ func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
 		books = []model.Book{}
 	}
 
-	tmpl, err := template.ParseFiles(wd + "/view/catalogue-table.html")
+	tmpl, err := template.ParseFiles(wd + "/view/fragments/catalogue-table.html")
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -170,15 +203,22 @@ func Init(r *model.Repository) {
 		log.Fatal(err)
 	}
 
+	nv = []NavItem{}
+	nv.Add("Home", "/")
+	nv.Add("Catalogue", "/books/catalogue")
+
 	// Book handlers
 	http.HandleFunc("GET /api/", ApiIndexHandler)
 	http.HandleFunc("GET /api/books/all", ApiAllBooksHandler)
 	http.HandleFunc("GET /api/books/{id}", ApiBookByIdHandler)
 	http.HandleFunc("GET /api/books/title", ApiBookByTitleHandler)
-	http.HandleFunc("GET /template/books/catalogue", AllBooksTemplate)
 	http.HandleFunc("GET /books/catalogue", AllBooks)
 
 	// Author handlers
 	http.HandleFunc("GET /api/authors/all", ApiAllAuthorsHandler)
 	http.HandleFunc("GET /api/authors/firstName", ApiAuthorByFirstName)
+
+	// Html templates
+	http.HandleFunc("GET /template/books/catalogue", AllBooksTemplate)
+	http.HandleFunc("GET /template/headers/books", BookCatalogueHeaderTemplate)
 }

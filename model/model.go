@@ -5,24 +5,18 @@ import (
 	"log"
 )
 
-type Author struct {
-	FirstName string
-	LastName  string
-	ID        int
-}
-
-type Book struct {
-	Title       string
-	Description string
-	ID          int
-}
-
 type Repository struct {
 	db *sql.DB
 }
 
 func NewRepo(d *sql.DB) *Repository {
 	return &Repository{db: d}
+}
+
+type Book struct {
+	Title       string
+	Description string
+	ID          int
 }
 
 func (r *Repository) FindBookById(id int) (Book, error) {
@@ -95,6 +89,12 @@ func (r *Repository) FindAllBooks() ([]Book, error) {
 	}
 
 	return books, nil
+}
+
+type Author struct {
+	FirstName string
+	LastName  string
+	ID        int
 }
 
 func (r *Repository) FindAllAuthors() ([]Author, error) {
