@@ -8,7 +8,6 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/tqt1345/Library-Go/controller"
-	"github.com/tqt1345/Library-Go/database"
 	"github.com/tqt1345/Library-Go/model"
 )
 
@@ -19,9 +18,8 @@ const (
 )
 
 var (
-	repo    *model.Repository
-	queries *database.Queries
-	ctx     context.Context
+	repo *model.Repository
+	ctx  context.Context
 )
 
 // This exists to init everything the program needs in one area and return any errors
