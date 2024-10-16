@@ -190,8 +190,32 @@ func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
 }
 
 func AllBooks(w http.ResponseWriter, r *http.Request) {
+	// w.Header().Set(ContentType, Html)
+	// http.ServeFile(w, r, wd+"/view/books.html")
+	servePage(w, r, "/view/books.html")
+}
+
+func IndexHeaderTemplate(w http.ResponseWriter, r *http.Request) {
+	h := Header{"Home", nv}
+
+	tmpl, err := template.ParseFiles(wd + "/view/fragments/header.html")
+	if err != nil {
+		log.Print(err.Error())
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set(ContentType, Html)
-	http.ServeFile(w, r, wd+"/view/books.html")
+	tmpl.Execute(w, h)
+}
+
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	servePage(w, r, "/view/index.html")
+}
+
+func servePage(w http.ResponseWriter, r *http.Request, filePath string) {
+	w.Header().Set(ContentType, Html)
+	http.ServeFile(w, r, wd+filePath)
 }
 
 func Init(r *model.Repository) {
@@ -207,6 +231,9 @@ func Init(r *model.Repository) {
 	nv.Add("Home", "/")
 	nv.Add("Catalogue", "/books/catalogue")
 
+	// Index
+	http.HandleFunc("GET /", IndexHandler)
+
 	// Book handlers
 	http.HandleFunc("GET /api/", ApiIndexHandler)
 	http.HandleFunc("GET /api/books/all", ApiAllBooksHandler)
@@ -221,4 +248,5 @@ func Init(r *model.Repository) {
 	// Html templates
 	http.HandleFunc("GET /template/books/catalogue", AllBooksTemplate)
 	http.HandleFunc("GET /template/headers/books", BookCatalogueHeaderTemplate)
+	http.HandleFunc("GET /template/headers/index", IndexHeaderTemplate)
 }
