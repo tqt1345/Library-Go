@@ -18,13 +18,27 @@ func serveHeaderTemplate(w http.ResponseWriter, title string) {
 
 	tmpl, err := template.ParseFiles(wd + "/view/templates/header.html")
 	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		internalServerError(w, err)
 		return
 	}
 
 	w.Header().Set(ContentType, Html)
 	tmpl.Execute(w, h)
+}
+
+func internalServerError(w http.ResponseWriter, err error) {
+	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	log.Print(err.Error())
+}
+
+func badRequest(w http.ResponseWriter, err error) {
+	http.Error(w, "Bad Request", http.StatusBadRequest)
+	log.Print(err.Error())
+}
+
+func notFound(w http.ResponseWriter, err error) {
+	http.Error(w, "Not Found", http.StatusNotFound)
+	log.Print(err.Error())
 }
 
 // END HELPER FUNCTIONS

@@ -14,11 +14,11 @@ three max total loans
 
 ### Book catalogue
 
-- [ ] Display a card for each book
-  - [ ] book cover image
+- [ ] Display a table for each book entity
   - [ ] book title
   - [ ] book authors
   - [ ] book description
+  - [ ] link to book page
 - [ ] Max 20 cards on the page. Any more will be sent to another page
 
 ### Domain objects

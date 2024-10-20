@@ -2,7 +2,6 @@ package controller
 
 import (
 	"html/template"
-	"log"
 	"net/http"
 
 	"github.com/tqt1345/Library-Go/model"
@@ -42,8 +41,7 @@ func IndexHeaderTemplate(w http.ResponseWriter, r *http.Request) {
 func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
 	books, err := repo.FindAllBooks()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		log.Print(err.Error())
+		internalServerError(w, err)
 		return
 	}
 
@@ -53,13 +51,15 @@ func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
 
 	tmpl, err := template.ParseFiles(wd + "/view/templates/catalogue-table.html")
 	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		internalServerError(w, err)
 		return
 	}
 
 	w.Header().Set(ContentType, Html)
 	tmpl.Execute(w, books)
+}
+
+func BookDetailsTemplate(w http.ResponseWriter, r *http.Request) {
 }
 
 // END CONTENT TEMPLATES

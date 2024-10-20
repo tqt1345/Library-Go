@@ -34,6 +34,10 @@ func Init(r *model.Repository) {
 	nv.Add("Home", "/")
 	nv.Add("Catalogue", "/books/catalogue")
 
+	// File server
+	fs := http.FileServer(http.Dir("./static"))
+	http.HandleFunc("GET /static/", http.StripPrefix("/static/", fs).ServeHTTP)
+
 	// Index
 	http.HandleFunc("GET /", IndexHandler)
 
@@ -43,6 +47,7 @@ func Init(r *model.Repository) {
 	http.HandleFunc("GET /api/books/{id}", ApiBookByIdHandler)
 	http.HandleFunc("GET /api/books/title", ApiBookByTitleHandler)
 	http.HandleFunc("GET /books/catalogue", AllBooks)
+	http.HandleFunc("GET /books/details", BookDetails)
 
 	// Author handlers
 	http.HandleFunc("GET /api/authors/all", ApiAllAuthorsHandler)
