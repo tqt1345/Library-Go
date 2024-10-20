@@ -11,12 +11,24 @@ const (
 	authorPath = "/api/authors"
 )
 
+func NewDB() *sql.DB {
+	db, err := sql.Open("sqlite3", "./data.db")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	if err := db.Ping(); err != nil {
+		log.Fatal(err.Error())
+	}
+	return db
+}
+
 type Repository struct {
-	db *sql.DB
+	Db *sql.DB
 }
 
 func NewRepo(d *sql.DB) *Repository {
-	return &Repository{db: d}
+	return &Repository{Db: d}
 }
 
 type Book struct {
@@ -35,7 +47,7 @@ func (r *Repository) FindBookById(id int) (Book, error) {
 	sql := `SELECT * FROM books WHERE id = ?`
 
 	var b Book
-	err := r.db.QueryRow(sql, id).Scan(&b.ID, &b.Title, &b.Description, &b.CoverImage)
+	err := r.Db.QueryRow(sql, id).Scan(&b.ID, &b.Title, &b.Description, &b.CoverImage)
 	log.Print(b)
 	if err != nil {
 		log.Print(err)
@@ -51,7 +63,7 @@ func (r *Repository) FindBooksByTitle(title string) ([]Book, error) {
 	sql := `SELECT * FROM books WHERE title LIKE '%' || ? || '%'`
 	var books []Book
 
-	rows, err := r.db.Query(sql, title)
+	rows, err := r.Db.Query(sql, title)
 	if err != nil {
 		log.Print(err)
 		return nil, err
@@ -85,7 +97,7 @@ func (r *Repository) FindAllBooks() ([]Book, error) {
 
 	var books []Book
 
-	rows, err := r.db.Query(sql)
+	rows, err := r.Db.Query(sql)
 	if err != nil {
 		log.Print(err)
 		return nil, err
@@ -125,7 +137,7 @@ func (r *Repository) FindAllAuthors() ([]Author, error) {
 
 	var authors []Author
 
-	rows, err := r.db.Query(sql)
+	rows, err := r.Db.Query(sql)
 	if err != nil {
 		log.Print(err)
 		return nil, err
@@ -155,7 +167,7 @@ func (r *Repository) FindAuthorsByFirstName(name string) ([]Author, error) {
 
 	var authors []Author
 
-	rows, err := r.db.Query(sql, name)
+	rows, err := r.Db.Query(sql, name)
 	if err != nil {
 		log.Print(err)
 		return nil, err

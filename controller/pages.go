@@ -1,13 +1,20 @@
 package controller
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 // BEGIN PAGES
-func AllBooks(w http.ResponseWriter, r *http.Request) {
+func (s *Server) AllBooks(w http.ResponseWriter, r *http.Request) {
 	servePage(w, r, "/view/books.html")
 }
 
-func IndexHandler(w http.ResponseWriter, r *http.Request) {
+func wtf(w http.ResponseWriter) {
+	fmt.Fprintf(w, "Hello world")
+}
+
+func (s *Server) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	servePage(w, r, "/view/index.html")
 }
 

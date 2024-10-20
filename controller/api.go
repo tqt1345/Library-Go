@@ -9,14 +9,14 @@ import (
 	"github.com/tqt1345/Library-Go/model"
 )
 
-func ApiIndexHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) ApiIndexHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set(ContentType, Json)
 
 	json.NewEncoder(w).Encode("Hello world!")
 }
 
-func ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
-	books, err := repo.FindAllBooks()
+func (s *Server) ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
+	books, err := s.Repo.FindAllBooks()
 	if err != nil {
 		internalServerError(w, err)
 		return
@@ -30,14 +30,14 @@ func ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(books)
 }
 
-func ApiBookByIdHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) ApiBookByIdHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		badRequest(w, err)
 		return
 	}
 
-	book, err := repo.FindBookById(id)
+	book, err := s.Repo.FindBookById(id)
 	if err != nil {
 		notFound(w, err)
 		return
@@ -47,7 +47,7 @@ func ApiBookByIdHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(book)
 }
 
-func ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	var title string
 
@@ -58,7 +58,7 @@ func ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	title = params.Get("title")
 
-	books, err := repo.FindBooksByTitle(title)
+	books, err := s.Repo.FindBooksByTitle(title)
 	if err != nil {
 		notFound(w, err)
 		return

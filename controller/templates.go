@@ -60,14 +60,14 @@ func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
 	tmpl.Execute(w, books)
 }
 
-func BookDetailsTemplate(w http.ResponseWriter, r *http.Request) {
+func (s *Server) BookDetailsTemplate(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(r.PathValue("id"))
 	if err != nil {
 		badRequest(w, err)
 		return
 	}
 
-	book, err := repo.FindBookById(id)
+	book, err := s.Repo.FindBookById(id)
 	if err != nil {
 		notFound(w, err)
 		return
