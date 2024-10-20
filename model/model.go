@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	bookPath   = "/api/books/"
+	bookPath   = "/books/details/"
 	authorPath = "/api/authors"
 )
 

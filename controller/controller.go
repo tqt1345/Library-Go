@@ -47,7 +47,7 @@ func Init(r *model.Repository) {
 	http.HandleFunc("GET /api/books/{id}", ApiBookByIdHandler)
 	http.HandleFunc("GET /api/books/title", ApiBookByTitleHandler)
 	http.HandleFunc("GET /books/catalogue", AllBooks)
-	http.HandleFunc("GET /books/details", BookDetails)
+	http.HandleFunc("GET /books/details/{id}", BookDetailsTemplate)
 
 	// Author handlers
 	http.HandleFunc("GET /api/authors/all", ApiAllAuthorsHandler)
@@ -57,4 +57,5 @@ func Init(r *model.Repository) {
 	http.HandleFunc("GET /template/books/catalogue", AllBooksTemplate)
 	http.HandleFunc("GET /template/headers/books", BookCatalogueHeaderTemplate)
 	http.HandleFunc("GET /template/headers/index", IndexHeaderTemplate)
+	// http.HandleFunc("GET /template/books/details/{id}", BookDetailsTemplate)
 }

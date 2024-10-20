@@ -3,6 +3,7 @@ package controller
 import (
 	"html/template"
 	"net/http"
+	"strconv"
 
 	"github.com/tqt1345/Library-Go/model"
 )
@@ -60,6 +61,26 @@ func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
 }
 
 func BookDetailsTemplate(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		badRequest(w, err)
+		return
+	}
+
+	book, err := repo.FindBookById(id)
+	if err != nil {
+		notFound(w, err)
+		return
+	}
+
+	templ, err := template.ParseFiles(wd + "/view/bookDetails.html")
+	if err != nil {
+		internalServerError(w, err)
+		return
+	}
+
+	w.Header().Set(ContentType, Html)
+	templ.Execute(w, book)
 }
 
 // END CONTENT TEMPLATES
