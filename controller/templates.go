@@ -27,11 +27,11 @@ func (n *NavItems) Add(title, url string) {
 
 // HEADER TEMPLATES
 
-func BookCatalogueHeaderTemplate(w http.ResponseWriter, r *http.Request) {
+func (s *Server) BookCatalogueHeaderTemplate(w http.ResponseWriter, r *http.Request) {
 	serveHeaderTemplate(w, "Book Catalogue")
 }
 
-func IndexHeaderTemplate(w http.ResponseWriter, r *http.Request) {
+func (s *Server) IndexHeaderTemplate(w http.ResponseWriter, r *http.Request) {
 	serveHeaderTemplate(w, "Home")
 }
 
@@ -39,8 +39,8 @@ func IndexHeaderTemplate(w http.ResponseWriter, r *http.Request) {
 
 // CONTENT TEMPLATES
 
-func AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
-	books, err := repo.FindAllBooks()
+func (s *Server) AllBooksTemplate(w http.ResponseWriter, r *http.Request) {
+	books, err := s.Repo.FindAllBooks()
 	if err != nil {
 		internalServerError(w, err)
 		return

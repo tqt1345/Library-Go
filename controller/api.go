@@ -9,12 +9,6 @@ import (
 	"github.com/tqt1345/Library-Go/model"
 )
 
-func (s *Server) ApiIndexHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set(ContentType, Json)
-
-	json.NewEncoder(w).Encode("Hello world!")
-}
-
 func (s *Server) ApiAllBooksHandler(w http.ResponseWriter, r *http.Request) {
 	books, err := s.Repo.FindAllBooks()
 	if err != nil {
@@ -75,8 +69,8 @@ func (s *Server) ApiBookByTitleHandler(w http.ResponseWriter, r *http.Request) {
 func ApiBookByAuthorHandler(w http.ResponseWriter, r *http.Request) {
 }
 
-func ApiAllAuthorsHandler(w http.ResponseWriter, r *http.Request) {
-	authors, err := repo.FindAllAuthors()
+func (s *Server) ApiAllAuthorsHandler(w http.ResponseWriter, r *http.Request) {
+	authors, err := s.Repo.FindAllAuthors()
 	if err != nil {
 		internalServerError(w, err)
 	}
@@ -89,7 +83,7 @@ func ApiAllAuthorsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(authors)
 }
 
-func ApiAuthorByFirstName(w http.ResponseWriter, r *http.Request) {
+func (s *Server) ApiAuthorByFirstName(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
 	if params["firstName"] == nil {
 		err := errors.New("Bad request")
@@ -98,7 +92,7 @@ func ApiAuthorByFirstName(w http.ResponseWriter, r *http.Request) {
 	}
 
 	name := params.Get("firstName")
-	authors, err := repo.FindAuthorsByFirstName(name)
+	authors, err := s.Repo.FindAuthorsByFirstName(name)
 	if err != nil {
 		internalServerError(w, err)
 		return
