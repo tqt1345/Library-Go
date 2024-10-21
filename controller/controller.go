@@ -26,10 +26,6 @@ type Server struct {
 	Port string
 }
 
-// func (s *Server) HandleIndex(w http.ResponseWriter, r *http.Request) {
-// 	fmt.Fprintf(w, "Hello world")
-// }
-
 func (s *Server) Start() {
 	var err error
 	wd, err = os.Getwd()
@@ -40,6 +36,7 @@ func (s *Server) Start() {
 	nv = []NavItem{}
 	nv.Add("Home", "/")
 	nv.Add("Catalogue", "/books/catalogue")
+
 	// File server
 	fs := http.FileServer(http.Dir("./static"))
 	http.HandleFunc("GET /static/", http.StripPrefix("/static/", fs).ServeHTTP)
@@ -59,50 +56,11 @@ func (s *Server) Start() {
 	http.HandleFunc("GET /api/authors/all", s.ApiAllAuthorsHandler)
 	http.HandleFunc("GET /api/authors/firstName", s.ApiAuthorByFirstName)
 
-	// // Html templates
+	// Html templates
 	http.HandleFunc("GET /template/books/catalogue", s.AllBooksTemplate)
 	http.HandleFunc("GET /template/headers/books", s.BookCatalogueHeaderTemplate)
 	http.HandleFunc("GET /template/headers/index", s.IndexHeaderTemplate)
 
-	// // http.HandleFunc("GET /template/books/details/{id}", BookDetailsTemplate)
+	// http.HandleFunc("GET /template/books/details/{id}", BookDetailsTemplate)
 	http.ListenAndServe(s.Port, nil)
 }
-
-// func Init(r *model.Repository) {
-// 	repo = r
-//
-// 	var err error
-// 	wd, err = os.Getwd()
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-//
-// 	nv = []NavItem{}
-// 	nv.Add("Home", "/")
-// 	nv.Add("Catalogue", "/books/catalogue")
-//
-// 	// File server
-// 	fs := http.FileServer(http.Dir("./static"))
-// 	http.HandleFunc("GET /static/", http.StripPrefix("/static/", fs).ServeHTTP)
-//
-// 	// Index
-// 	http.HandleFunc("GET /", IndexHandler)
-//
-// 	// Book handlers
-// 	http.HandleFunc("GET /api/", ApiIndexHandler)
-// 	http.HandleFunc("GET /api/books/all", ApiAllBooksHandler)
-// 	http.HandleFunc("GET /api/books/{id}", ApiBookByIdHandler)
-// 	http.HandleFunc("GET /api/books/title", ApiBookByTitleHandler)
-// 	http.HandleFunc("GET /books/catalogue", AllBooks)
-// 	http.HandleFunc("GET /books/details/{id}", BookDetailsTemplate)
-//
-// 	// Author handlers
-// 	http.HandleFunc("GET /api/authors/all", ApiAllAuthorsHandler)
-// 	http.HandleFunc("GET /api/authors/firstName", ApiAuthorByFirstName)
-//
-// 	// Html templates
-// 	http.HandleFunc("GET /template/books/catalogue", AllBooksTemplate)
-// 	http.HandleFunc("GET /template/headers/books", BookCatalogueHeaderTemplate)
-// 	http.HandleFunc("GET /template/headers/index", IndexHeaderTemplate)
-// 	// http.HandleFunc("GET /template/books/details/{id}", BookDetailsTemplate)
-// }
