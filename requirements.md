@@ -15,11 +15,13 @@ three max total loans
 ### Book catalogue
 
 - [ ] Display a table for each book entity
-  - [ ] book title
+  - [x] book title
   - [ ] book authors
-  - [ ] book description
-  - [ ] link to book page
-- [ ] Max 20 cards on the page. Any more will be sent to another page
+  - [x] book description
+  - [x] link to book page
+
+- [ ] Implement book and author many to many relationship
+- [ ] Book details page shows the books authors
 
 ### Domain objects
 
